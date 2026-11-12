@@ -1,0 +1,149 @@
+{
+	"$comment": "Demo family used by `npm run seed:demo`, the README images and the render tests. Rosa, her family and San Telmo are fictional.",
+	"organizer": {
+		"name": "Maya Delgado",
+		"email": "demo@kinstory.local",
+		"password": "kinstory-demo"
+	},
+	"project": {
+		"title": "Bread & Salt",
+		"subtitle": "Stories from Rosa Delgado, told to her grandchildren over one year of Sundays",
+		"imprint": "Printed for the Delgado family",
+		"dedication": "For Maya, Daniel and Lucía, who asked — and for Tomás, who would have told it better.",
+		"afterword": [
+			"Every Sunday for a year, Grandma answered one question. Most weeks she called the Kinstory number from the phone in her kitchen; a few times she recorded a voice note on her tablet. She never installed an app, and she never once let us skip a week.",
+			"These are her answers, in her words. We took out the ums and the parts where she was talking to the cat, and nothing else.",
+			"The tin of broken plates was still in the closet."
+		],
+		"blurb": "“Not the whole song. Just the part you heard the most.”"
+	},
+	"storyteller": {
+		"name": "Rosa Delgado",
+		"phone": "+15555550142",
+		"timezone": "America/New_York",
+		"callDay": 0,
+		"callTime": "10:30"
+	},
+	"members": ["Daniel", "Lucía"],
+	"frontispiece": {
+		"photo": "harbour-wall",
+		"caption": "Rosa, aged nineteen, on the harbour wall at San Telmo"
+	},
+	"parts": [
+		{
+			"title": "San Telmo",
+			"stories": [
+				{
+					"title": "The Kitchen on Calle del Mar",
+					"question": "What did your mother’s kitchen smell like?",
+					"askedBy": "Maya",
+					"recorded": "2026-03-08",
+					"via": "phone",
+					"pullQuote": "Not the whole song. Just the part you heard the most.",
+					"pullQuoteAfter": 3,
+					"photos": [
+						{
+							"photo": "calle-del-mar",
+							"caption": "The house on Calle del Mar, around 1950",
+							"layout": "full",
+							"after": 2
+						}
+					],
+					"text": "My mother's kitchen smelled of three things, and if you gave me a blindfold today I could still tell you which hour it was by the smell. In the morning it was coffee and the woodsmoke from the stove, because my father liked the fire going before he went down to the boats. At noon it was garlic. Always garlic. She would put a whole head of it in the pan with the oil, and the smell would go out the window and down the street, and the neighbours would say, ah, Carmen is cooking. And in the evening it was the sea, because whatever my father brought home, that was dinner.\n\nThe kitchen was small. I don't think you could have fit four of you in it. There was a table with one short leg that my brother fixed with a folded cigarette packet, and that packet stayed there for twenty years. Nobody ever bought a new table. Why would you? It worked.\n\nMy mother never measured anything. I asked her once how much flour goes in the bread and she looked at me like I had asked her how much air goes in your lungs. \"Enough,\" she said. \"You feel it.\" I was nine and I was furious with her, because I wanted the number. Later, when I had my own bakery, I understood. You do feel it. The dough tells you.\n\nShe sang while she cooked, but never the whole song. Just the same two lines, over and over, from some song about a girl waiting at a window. I never learned the rest of it. I asked my aunt years later, and she didn't know either. So now I only know two lines of it too, and I sing them when I make soup, and your mother says I sound exactly like her. That is how things get passed down, I think. Not the whole song. Just the part you heard the most."
+				},
+				{
+					"title": "The Night the Boats Came In Late",
+					"question": "Tell me about a night you’ll never forget.",
+					"askedBy": "Daniel",
+					"recorded": "2026-03-22",
+					"via": "phone",
+					"pullQuote": "That is what a village is. It is the people who stay on the wall with you.",
+					"pullQuoteAfter": 6,
+					"photos": [
+						{
+							"photo": "harbour",
+							"caption": "The harbour at San Telmo",
+							"layout": "pair",
+							"after": 3
+						},
+						{
+							"photo": "church",
+							"caption": "The church above the harbour",
+							"layout": "pair",
+							"after": 3
+						}
+					],
+					"text": "I was eleven, maybe twelve. It was November, I know, because the festival lights for the Virgin were still up on the church. The wind came in the afternoon, very fast, the way it does there, and the sky went the colour of a bruise.\n\nEvery boat was out. My father, my uncle Paco, the Ruiz brothers, everybody. And by dark only four had come back.\n\nThe women went down to the harbour with lanterns. Nobody told them to; they just went. I remember my mother putting on her black shawl, and I remember thinking that was a terrible sign, because she only wore it to funerals. I followed her even though she told me to stay with my brother.\n\nWe stood on the wall for hours. Nobody talked. You could hear the rope on the flagpole slapping, slap, slap, and the water hitting the stones. Señora Ruiz was praying under her breath, very fast, the same prayer again and again, and after a while I was praying it too without knowing the words.\n\nAround two in the morning someone saw a light. Then two lights. Then the whole wall started shouting at once. They came in one after the other, slowly, because they had tied the boats together so none would be lost. My father had his arm around my uncle, who had cut his hand very badly, and he was laughing. Laughing! He said, \"Carmen, what are you doing out here in your funeral shawl?\" And my mother hit him. Really hit him, on the chest, and then she held on to him and didn't let go.\n\nAll the boats came home that night. Every one. The priest rang the bell, at two in the morning, and nobody complained.\n\nI think about that wall sometimes. How we all stood there together and nobody went home. That is what a village is. It is the people who stay on the wall with you."
+				},
+				{
+					"title": "Tomás and the Bicycle",
+					"question": "How did you meet Grandpa?",
+					"askedBy": "Maya",
+					"recorded": "2026-04-05",
+					"via": "voice note",
+					"pullQuote": "Forty years of four o'clock in the morning, side by side.",
+					"pullQuoteAfter": 5,
+					"photos": [
+						{
+							"photo": "lighthouse",
+							"caption": "The road to the lighthouse",
+							"layout": "inset",
+							"after": 4
+						}
+					],
+					"text": "Your grandfather was not the handsomest boy in San Telmo. I want that on the record. The handsomest was Ernesto Vidal, and every girl knew it, including Ernesto.\n\nBut Tomás had a bicycle. A red one, from his uncle in the city, and it was the only bicycle in the village that had a bell. He rang that bell every time he passed our house. Every time. Ring, ring. My mother said, \"That boy is going to wear out the bell or my patience, whichever comes first.\"\n\nOne Sunday after Mass he asked if I wanted to ride to the lighthouse. I said no, of course. You always said no the first time. He asked again the next Sunday and I said no again. The third Sunday he didn't ask. He just stood there holding the bicycle and looking at his shoes, and I felt so sorry for him that I said, \"Well, are we going or not?\"\n\nI sat on the back with my legs to one side and held on to his jacket. The road to the lighthouse is all hills, and he was too proud to let me walk, so he pushed that bicycle up every hill with me sitting on it, red in the face, saying \"It's nothing, it's nothing.\" By the time we got there he could not speak. He just lay down in the grass and breathed.\n\nWe sat by the lighthouse until the sun went down, and he told me he was going to have his own business someday, he didn't know what kind, but his own. Nobody was going to tell him when to wake up. I said, \"Tomás, you will wake up at four in the morning for the rest of your life, I can see it.\" I was joking. But that is exactly what happened. Forty years of four o'clock in the morning, side by side.\n\nWe were married two years later. Ernesto Vidal came to the wedding. He was still very handsome. It didn't matter at all."
+				}
+			]
+		},
+		{
+			"title": "Across the Water",
+			"stories": [
+				{
+					"title": "Crossing",
+					"question": "What do you remember about leaving home?",
+					"askedBy": "Maya",
+					"recorded": "2026-05-17",
+					"via": "phone",
+					"pullQuote": "You cannot do anything about the sea or the rain. But you can fix a roof.",
+					"pullQuoteAfter": 5,
+					"photos": [],
+					"text": "We left in March of 1966 with two suitcases and a box of my mother's plates wrapped in newspaper. Tomás's cousin had written from across the water that there was work, real work, and a room above a shop that we could have for almost nothing if we fixed the roof.\n\nI cried for the whole first day on the boat. Not because I was sad, exactly. I was excited too. But I kept seeing my mother on the dock, getting smaller, still waving even when she must not have been able to see us anymore. She waved until the boat went around the point. I know because I watched her the whole time.\n\nThe second day I was seasick and too busy to cry.\n\nWhen we arrived it was raining, a cold rain, a rain I did not know existed. I had one coat, a thin one, and I remember standing on the pier with water running down my neck and thinking, what have we done. Tomás put his jacket over both of us and said, \"Rosa, we are here. That is the hard part. Everything after this is just work.\"\n\nHe was wrong, of course. Everything after was also hard. But he was right that it was work, and work is something you can do. You cannot do anything about the sea or the rain or your mother getting smaller on the dock. But you can fix a roof.\n\nWe unpacked my mother's plates that night on the floor of the empty room. Three of them had broken. I kept the pieces in a tin for years. I think the tin is still in the closet, actually. You should look. If it is there, keep it."
+				},
+				{
+					"title": "Forty Loaves Before Sunrise",
+					"question": "What was it like running the bakery?",
+					"askedBy": "Lucía",
+					"recorded": "2026-06-14",
+					"via": "phone",
+					"pullQuote": "Every street needs one thing that is lit up before anything else.",
+					"pullQuoteAfter": 2,
+					"photos": [
+						{
+							"photo": "la-estrella",
+							"caption": "La Estrella on the morning it opened, September 1971",
+							"layout": "plate",
+							"after": 5
+						}
+					],
+					"text": "The bakery opened on the ninth of September, 1971. We called it La Estrella, the star, because Tomás said every street needs one thing that is lit up before anything else.\n\nThe first morning we made forty loaves and sold eleven. The rest we gave to the nuns at Saint Agnes and to the men at the bus depot, and I was sure we had made the biggest mistake of our lives. Tomás said, \"Rosa, the people who got free bread today will tell everyone.\" And they did. Within a year we were making three hundred loaves before sunrise and there was a line out the door on Saturdays.\n\nFour o'clock every morning. I want you to understand what that means. In winter it is still night. The street is empty. The ovens take an hour to come up to heat, and in that hour it is just the two of us and the radio and the flour in the air, so much flour that it looks like fog under the lamp. Those were the happiest hours of my life. Nobody believes me when I say that, but it is true. We hardly talked. We didn't need to.\n\nYour mother was born in the room above the bakery. She learned to walk holding on to the flour sacks. When she was four she sold her first loaf, all by herself, to Mr. Kowalski from the hardware store, who paid her with a whole dollar and told her to keep the change. She still has that dollar. Ask her.\n\nWe sold the bakery in 2009, when Tomás's back got too bad. The new owners kept the name. I walk past it sometimes and the light is on before anything else on the street, just like he wanted. I don't go in. I just like to see it lit."
+				}
+			]
+		},
+		{
+			"title": "For Those Who Come After",
+			"stories": [
+				{
+					"title": "What I Know Now",
+					"question": "What do you want your great-grandchildren to know?",
+					"askedBy": "Daniel",
+					"recorded": "2026-10-04",
+					"via": "phone",
+					"pullQuote": "The hard years end. I promise you that.",
+					"pullQuoteAfter": 4,
+					"photos": [],
+					"text": "You asked what I want the great-grandchildren to know. I have been thinking about it all week, which is why I didn't call you on Sunday. I wanted to get it right.\n\nFirst: learn to make one thing well. It doesn't matter what. Bread, a chair, a song, a good argument. When you make one thing well, you understand how all the other things are made, and you stop being afraid of hard work.\n\nSecond: write down the names. When I was young I thought I would always remember who everyone was in the photographs. Now I look at them and there is a woman standing next to my mother at the harbour, laughing, and I cannot tell you her name. Somebody loved her. Somebody knew her name. Write it on the back.\n\nThird: be the one who stays on the wall. You'll understand what I mean when you read the story about the boats.\n\nAnd last, and this is the most important one: the hard years end. I promise you that. The year we arrived, the year the bakery almost closed, the year your grandfather was sick. Each one I thought would never end, and each one did. Not because things got easy. Because we kept getting up at four in the morning until they did.\n\nThat's all. That's everything I know. Now go and eat something, you look thin."
+				}
+			]
+		}
+	]
+}
