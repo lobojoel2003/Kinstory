@@ -3,11 +3,15 @@
 // and CHANGELOG.md must have a section for that version.
 //
 //   node scripts/check-version.mjs v1.2.3
-//   node scripts/check-version.mjs            # uses GITHUB_REF_NAME
+//   node scripts/check-version.mjs            # uses GITHUB_REF_NAME on tag builds
 
 import { readFileSync } from 'node:fs';
 
-const tag = process.argv[2] ?? process.env.GITHUB_REF_NAME ?? '';
+// On tag builds GitHub sets GITHUB_REF_TYPE=tag; branch builds only check the changelog.
+const tag =
+	process.argv[2] ??
+	(process.env.GITHUB_REF_TYPE === 'tag' ? process.env.GITHUB_REF_NAME : '') ??
+	'';
 const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const changelog = readFileSync(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
 
