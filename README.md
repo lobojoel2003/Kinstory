@@ -231,7 +231,7 @@ flowchart LR
 
 Kinstory follows [Semantic Versioning](https://semver.org). Every change is recorded in [CHANGELOG.md](CHANGELOG.md).
 
-- **Tags** `vMAJOR.MINOR.PATCH` trigger the [release workflow](.github/workflows/release.yml). It checks that the tag matches `package.json` and the changelog, runs the test suites, and publishes a GitHub release with notes from the changelog, a ready-to-run tarball, the sample book PDFs and `SHA256SUMS.txt`.
+- **Tags** `vMAJOR.MINOR.PATCH` trigger the [release workflow](.github/workflows/release.yml) (it can also be run by hand with a version number, and then creates the tag itself). It checks that the tag matches `package.json` and the changelog, runs the test suites, and publishes a GitHub release with notes from the changelog, a ready-to-run tarball, the sample book PDFs and `SHA256SUMS.txt`.
 - **Docker images** for `linux/amd64` and `linux/arm64` are pushed to `ghcr.io/lobojoel2003/kinstory` as `1.0.0`, `1.0`, `1` and `latest`. Every commit to `main` is published as `edge`, `main-<build>` and `sha-<commit>`.
 - **Build numbers** are the GitHub Actions run number. Each build records its version, build number, commit and date, shown in the footer and at `GET /api/health`, for example `1.0.0+42.3f2a9c1`. Images carry the same values as OCI labels.
 

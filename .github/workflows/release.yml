@@ -1,34 +1,35 @@
 name: Release
 
-# Push a SemVer tag to publish a release:
+# Two ways to publish a release, after bumping package.json and adding a
+# "## [X.Y.Z] - YYYY-MM-DD" section to CHANGELOG.md (see docs/releasing.md):
 #
-#   npm version 1.1.0 --no-git-tag-version   # bump package.json + lockfile
-#   # add a "## [1.1.0] - YYYY-MM-DD" section to CHANGELOG.md, commit
-#   git tag -a v1.1.0 -m "Kinstory 1.1.0" && git push origin v1.1.0
+#   1. Push a SemVer tag:  git tag -a v1.1.0 -m "Kinstory 1.1.0" && git push origin v1.1.0
+#   2. Run this workflow from the Actions tab on main with the version (1.1.0);
+#      it creates the annotated v1.1.0 tag itself once everything has passed.
 #
-# The workflow checks the tag matches package.json and CHANGELOG.md, runs the
-# test suites, builds a ready-to-run tarball and sample-book PDFs, publishes a
-# multi-architecture Docker image to GHCR and creates the GitHub release.
+# Either way it checks the version against package.json and CHANGELOG.md, runs
+# the test suites, builds a ready-to-run tarball and sample-book PDFs,
+# publishes a multi-architecture Docker image to GHCR and creates the release.
 
 on:
   push:
     tags: ['v[0-9]+.[0-9]+.[0-9]+*']
   workflow_dispatch:
     inputs:
-      tag:
-        description: Existing tag to release again (e.g. v1.0.0)
+      version:
+        description: Version to release from the selected branch, without the v (e.g. 1.1.0)
         required: true
 
 permissions:
   contents: read
 
 concurrency:
-  group: release-${{ inputs.tag || github.ref_name }}
+  group: release-${{ inputs.version || github.ref_name }}
   cancel-in-progress: false
 
 env:
   NODE_VERSION: 24
-  TAG: ${{ inputs.tag || github.ref_name }}
+  TAG: ${{ inputs.version && format('v{0}', inputs.version) || github.ref_name }}
   IMAGE: ghcr.io/${{ github.repository_owner }}/kinstory
 
 jobs:
@@ -54,11 +55,19 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ env.TAG }}
+          ref: ${{ github.sha }}
       - uses: actions/setup-node@v7
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
+      - name: The tag is new, or already marks this commit
+        run: |
+          existing="$(git ls-remote --tags origin "refs/tags/$TAG^{}" | cut -f1)"
+          [ -n "$existing" ] || existing="$(git ls-remote --tags origin "refs/tags/$TAG" | cut -f1)"
+          if [ -n "$existing" ] && [ "$existing" != "$GITHUB_SHA" ]; then
+            echo "::error::$TAG already exists on $existing, not on $GITHUB_SHA"
+            exit 1
+          fi
       - name: Tag, package.json and CHANGELOG agree
         id: version
         run: |
@@ -111,7 +120,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ env.TAG }}
+          ref: ${{ github.sha }}
+      - name: Commit date
+        id: commit
+        run: echo "date=$(git log -1 --format=%cI)" >> "$GITHUB_OUTPUT"
       - uses: docker/setup-buildx-action@v4
       - uses: docker/login-action@v4
         with:
@@ -134,7 +146,7 @@ jobs:
             VERSION=${{ needs.verify.outputs.version }}
             BUILD_NUMBER=${{ github.run_number }}
             GIT_SHA=${{ github.sha }}
-            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+            BUILD_DATE=${{ steps.commit.outputs.date }}
           outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
           cache-from: type=gha,scope=release-${{ matrix.arch }}
           cache-to: type=gha,scope=release-${{ matrix.arch }},mode=max
@@ -197,7 +209,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ env.TAG }}
+          ref: ${{ github.sha }}
       - uses: actions/download-artifact@v8
         with:
           name: dist
@@ -223,6 +235,19 @@ jobs:
             echo "Build ${{ github.run_number }} · commit ${GITHUB_SHA::7} · images for linux/amd64 and linux/arm64"
           } > notes.md
           cat notes.md
+      - name: Create the tag (manual runs)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" > /dev/null; then
+            echo "$TAG already exists"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git tag -a "$TAG" -m "Kinstory $VERSION" "$GITHUB_SHA"
+            git push origin "refs/tags/$TAG"
+          fi
       - name: Publish
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

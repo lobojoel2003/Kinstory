@@ -39,6 +39,11 @@ Kinstory uses [Semantic Versioning](https://semver.org): `MAJOR.MINOR.PATCH`.
    git push origin main vX.Y.Z
    ```
 
+Alternatively, push the commit and run the **Release** workflow from the
+repository's Actions tab on `main`, entering the version (`X.Y.Z`). It does
+everything below and creates the annotated `vX.Y.Z` tag itself once the
+images are published. This is handy when you cannot push tags directly.
+
 The [release workflow](../.github/workflows/release.yml) then:
 
 1. checks that the tag, `package.json` and `CHANGELOG.md` agree;
