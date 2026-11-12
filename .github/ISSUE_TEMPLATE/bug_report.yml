@@ -1,0 +1,59 @@
+name: Bug report
+description: Something in Kinstory doesn't work as it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. Please don't include real recordings, phone numbers or answer links. For security problems, use [private reporting](https://github.com/lobojoel2003/Kinstory/security/advisories/new) instead.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to …
+        2. Press …
+        3. See …
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Shown in the footer and at /api/health, e.g. 1.0.0+42.3f2a9c1
+    validations:
+      required: true
+  - type: dropdown
+    id: install
+    attributes:
+      label: How do you run Kinstory?
+      options:
+        - Docker / Compose
+        - Release tarball
+        - From source
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Storyteller's answer page
+        - Phone line
+        - Transcription
+        - Story editing
+        - Book typesetting or PDFs
+        - Accounts and settings
+        - Installation
+        - Something else
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Relevant server log lines (Kinstory logs one JSON object per line).
+      render: shell

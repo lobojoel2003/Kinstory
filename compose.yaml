@@ -1,0 +1,56 @@
+# Kinstory with PostgreSQL, ready for a small home server or VPS.
+#
+#   cp .env.example .env      # set PUBLIC_URL, POSTGRES_PASSWORD, optional phone/email
+#   docker compose up -d
+#
+# Then open http://localhost:3000. Put a TLS reverse proxy (Caddy, Traefik,
+# nginx) in front before sharing answer links outside your home network.
+
+name: kinstory
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: kinstory
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kinstory}
+      POSTGRES_DB: kinstory
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U kinstory -d kinstory']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    image: ghcr.io/lobojoel2003/kinstory:${KINSTORY_VERSION:-latest}
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - '${PORT:-3000}:3000'
+    environment:
+      DATABASE_URL: postgres://kinstory:${POSTGRES_PASSWORD:-kinstory}@db:5432/kinstory
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:3000}
+      ORIGIN: ${PUBLIC_URL:-http://localhost:3000}
+      ALLOW_SIGNUP: ${ALLOW_SIGNUP:-true}
+      SEED_DEMO: ${SEED_DEMO:-false}
+      TRANSCRIBE_PROVIDER: ${TRANSCRIBE_PROVIDER:-whisper-cpp}
+      WHISPER_THREADS: ${WHISPER_THREADS:-4}
+      WHISPER_LANGUAGE: ${WHISPER_LANGUAGE:-auto}
+      TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID:-}
+      TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN:-}
+      TWILIO_PHONE_NUMBER: ${TWILIO_PHONE_NUMBER:-}
+      TWILIO_API_BASE: ${TWILIO_API_BASE:-https://api.twilio.com}
+      SMTP_URL: ${SMTP_URL:-}
+      MAIL_FROM: ${MAIL_FROM:-Kinstory <kinstory@localhost>}
+    volumes:
+      - data:/data
+
+volumes:
+  db:
+  data:

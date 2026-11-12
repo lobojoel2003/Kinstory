@@ -1,0 +1,238 @@
+name: Release
+
+# Push a SemVer tag to publish a release:
+#
+#   npm version 1.1.0 --no-git-tag-version   # bump package.json + lockfile
+#   # add a "## [1.1.0] - YYYY-MM-DD" section to CHANGELOG.md, commit
+#   git tag -a v1.1.0 -m "Kinstory 1.1.0" && git push origin v1.1.0
+#
+# The workflow checks the tag matches package.json and CHANGELOG.md, runs the
+# test suites, builds a ready-to-run tarball and sample-book PDFs, publishes a
+# multi-architecture Docker image to GHCR and creates the GitHub release.
+
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing tag to release again (e.g. v1.0.0)
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+env:
+  NODE_VERSION: 24
+  TAG: ${{ inputs.tag || github.ref_name }}
+  IMAGE: ghcr.io/${{ github.repository_owner }}/kinstory
+
+jobs:
+  verify:
+    name: Verify & package
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: kinstory
+          POSTGRES_PASSWORD: kinstory
+          POSTGRES_DB: kinstory_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U kinstory" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL_TEST: postgres://kinstory:kinstory@localhost:5432/kinstory_test
+      BUILD_NUMBER: ${{ github.run_number }}
+      GIT_SHA: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Tag, package.json and CHANGELOG agree
+        id: version
+        run: |
+          node scripts/check-version.mjs "$TAG"
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+      - name: Install ffmpeg
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends ffmpeg
+      - run: npm ci
+      - run: npm run setup:typst
+      - run: npm run lint
+      - run: npm run check
+      - run: npm test
+      - run: npm run test:integration
+      - name: Build
+        run: BUILD_DATE="$(git log -1 --format=%cI)" npm run build
+      - name: Package release files
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          mkdir -p dist "stage/kinstory-$VERSION"
+          cp -r build templates fonts migrations demo package.json package-lock.json tools.json \
+            README.md LICENSE CHANGELOG.md .env.example "stage/kinstory-$VERSION/"
+          mkdir -p "stage/kinstory-$VERSION/scripts" && cp scripts/setup-typst.mjs "stage/kinstory-$VERSION/scripts/"
+          tar -C stage -czf "dist/kinstory-$VERSION.tar.gz" "kinstory-$VERSION"
+          npm run render:sample -- --out sample
+          cp sample/interior.pdf "dist/kinstory-$VERSION-sample-book-interior.pdf"
+          cp sample/cover.pdf "dist/kinstory-$VERSION-sample-book-cover.pdf"
+          (cd dist && sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt)
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist/*
+          retention-days: 7
+
+  image:
+    name: Image (${{ matrix.arch }})
+    needs: verify
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-latest
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Labels
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE }}
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/${{ matrix.arch }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VERSION=${{ needs.verify.outputs.version }}
+            BUILD_NUMBER=${{ github.run_number }}
+            GIT_SHA=${{ github.sha }}
+            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+          outputs: type=image,name=${{ env.IMAGE }},push-by-digest=true,name-canonical=true,push=true
+          cache-from: type=gha,scope=release-${{ matrix.arch }}
+          cache-to: type=gha,scope=release-${{ matrix.arch }},mode=max
+      - name: Export digest
+        run: |
+          mkdir -p digests
+          touch "digests/${DIGEST#sha256:}"
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+      - uses: actions/upload-artifact@v7
+        with:
+          name: digest-${{ matrix.arch }}
+          path: digests/*
+          retention-days: 1
+
+  manifest:
+    name: Multi-arch manifest
+    needs: [verify, image]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: digest-*
+          path: digests
+          merge-multiple: true
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Tags
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=semver,pattern={{version}},value=${{ env.TAG }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ env.TAG }}
+            type=semver,pattern={{major}},value=${{ env.TAG }}
+            type=raw,value=latest,enable=${{ !contains(env.TAG, '-') }}
+      - name: Create manifest list
+        working-directory: digests
+        run: |
+          docker buildx imagetools create \
+            $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+            $(printf "${IMAGE}@sha256:%s " *)
+      - name: Inspect
+        run: docker buildx imagetools inspect "${IMAGE}:${{ needs.verify.outputs.version }}"
+
+  github-release:
+    name: GitHub release
+    needs: [verify, manifest]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.TAG }}
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+      - name: Release notes
+        env:
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          {
+            node scripts/release-notes.mjs "$VERSION"
+            echo
+            echo "## Install"
+            echo
+            echo '```bash'
+            echo "docker pull ${IMAGE}:${VERSION}"
+            echo '```'
+            echo
+            echo "Or download \`kinstory-${VERSION}.tar.gz\`, then run \`npm ci --omit=dev && node build\` with Node 22.18+ (see the README for ffmpeg, Typst and whisper.cpp)."
+            echo
+            echo "The two \`sample-book\` PDFs are the demo family's book, typeset by this release."
+            echo
+            echo "---"
+            echo "Build ${{ github.run_number }} · commit ${GITHUB_SHA::7} · images for linux/amd64 and linux/arm64"
+          } > notes.md
+          cat notes.md
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.verify.outputs.version }}
+        run: |
+          flags=""
+          case "$VERSION" in *-*) flags="--prerelease" ;; *) flags="--latest" ;; esac
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber
+            gh release edit "$TAG" --notes-file notes.md --title "Kinstory $VERSION"
+          else
+            gh release create "$TAG" dist/* --verify-tag --title "Kinstory $VERSION" --notes-file notes.md $flags
+          fi
