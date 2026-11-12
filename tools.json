@@ -1,0 +1,5 @@
+{
+	"typst": "0.15.1",
+	"whisperCpp": "v1.9.5",
+	"whisperModel": "base.en"
+}

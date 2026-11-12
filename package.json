@@ -1,0 +1,88 @@
+{
+	"name": "kinstory",
+	"version": "1.0.0",
+	"description": "Record a grandparent's stories by phone call or voice note, transcribe them on your own server with whisper.cpp, and typeset a print-ready book with Typst.",
+	"private": true,
+	"type": "module",
+	"license": "AGPL-3.0-or-later",
+	"author": "Joel Stain Lobo",
+	"homepage": "https://github.com/lobojoel2003/Kinstory#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/lobojoel2003/Kinstory.git"
+	},
+	"bugs": {
+		"url": "https://github.com/lobojoel2003/Kinstory/issues"
+	},
+	"keywords": [
+		"memoir",
+		"family-history",
+		"storytelling",
+		"oral-history",
+		"typst",
+		"whisper",
+		"sveltekit",
+		"self-hosted",
+		"book"
+	],
+	"engines": {
+		"node": ">=22.18"
+	},
+	"imports": {
+		"#lib/*": "./src/lib/*"
+	},
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"start": "node build",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"lint": "prettier --check . && eslint .",
+		"format": "prettier --write .",
+		"test": "vitest run --project unit",
+		"test:integration": "vitest run --project integration",
+		"test:e2e": "playwright test",
+		"test:all": "npm run test && npm run test:integration && npm run test:e2e",
+		"setup:typst": "node scripts/setup-typst.mjs",
+		"seed:demo": "tsx scripts/seed-demo.ts",
+		"render:sample": "tsx scripts/render-sample.ts",
+		"showcase": "tsx scripts/showcase.ts",
+		"photos:demo": "node scripts/demo-photos.mjs",
+		"version:check": "node scripts/check-version.mjs"
+	},
+	"dependencies": {
+		"@fontsource-variable/inter": "^5.3.0",
+		"@fontsource/cormorant-garamond": "^5.3.0",
+		"@fontsource/eb-garamond": "^5.3.0",
+		"fflate": "^0.8.3",
+		"nodemailer": "^10.5.0",
+		"postgres": "^4.1.1",
+		"qrcode": "^1.5.4",
+		"sharp": "^0.35.5",
+		"zod": "^4.6.7"
+	},
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@playwright/test": "^1.60.0",
+		"@sveltejs/adapter-node": "^6.0.0",
+		"@sveltejs/kit": "^3.0.0",
+		"@sveltejs/vite-plugin-svelte": "^7.2.0",
+		"@types/node": "^22",
+		"@types/nodemailer": "^8.0.2",
+		"@types/qrcode": "^1.5.6",
+		"eslint": "^10.4.1",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-svelte": "^3.19.0",
+		"globals": "^17.6.0",
+		"prettier": "^3.8.3",
+		"prettier-plugin-svelte": "^4.1.0",
+		"svelte": "^5.57.2",
+		"svelte-check": "^4.6.0",
+		"tsx": "^4.23.15",
+		"typescript": "^6.0.3",
+		"typescript-eslint": "^8.60.1",
+		"vite": "^8.3.0",
+		"vitest": "^4.1.8"
+	}
+}
