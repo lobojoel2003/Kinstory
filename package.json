@@ -64,7 +64,7 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
-		"@playwright/test": "^1.60.0",
+		"@playwright/test": "^1.65.1",
 		"@sveltejs/adapter-node": "^6.0.0",
 		"@sveltejs/kit": "^3.0.0",
 		"@sveltejs/vite-plugin-svelte": "^7.2.0",
@@ -83,6 +83,6 @@
 		"typescript": "^6.0.3",
 		"typescript-eslint": "^8.60.1",
 		"vite": "^8.3.0",
-		"vitest": "^4.1.8"
+		"vitest": "^5.1.0"
 	}
 }
